@@ -10,9 +10,19 @@ use Acme\Student;
 
 class EloquentStudentProxy extends Student{
 
-	public static function toEloquent($student)
+	/**
+	 * @var EloquentStudent
+	 */
+	private $eloquentStudent;
+
+	function __construct(EloquentStudent $eloquentStudent)
 	{
-		$model =  EloquentStudent::findOrNew($student->id);
+		$this->eloquentStudent = $eloquentStudent;
+	}
+
+	public function toEloquent($student)
+	{
+		$model =  $this->eloquentStudent->findOrNew($student->id);
 
 		$model->fill([
 			"name" => $student->name,
@@ -23,7 +33,7 @@ class EloquentStudentProxy extends Student{
 		return $model;
 	}
 
-	public static function toEntity($model)
+	public function toEntity($model)
 	{
 		$student = new Student($model->name, new EmailAddress($model->email));
 		$student->score = new Score($model->score);
